@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+  falco:
+    build: .
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - /dev:/host/dev
+      - /proc:/host/proc:ro
+      - /boot:/host/boot:ro
+      - /lib/modules:/host/lib/modules:ro
+      - /usr:/host/usr:ro
+      - /etc:/host/etc:ro
+      - ./falco.yaml:/etc/falco/falco.yaml
+      # You can set the below options to load rules
+      # - ./falco_rules.yaml:/etc/falco/falco_rules.yaml
+      - ./falco_rules.local.yaml:/etc/falco/rules.d/gcp_auditlog_rules.yaml
+  
+  falcosidekick:
+    depends_on: [falco]
+    image: falcosecurity/falcosidekick:2.28.0
+    container_name: falcosidekick
+    environment:
+      - WEBUI_URL=http://falcosidekick-ui:2802
+    # You can set falcosidekick configuration here
+    # volumes:
+    #   - ./falcosidekick.yaml:/etc/falco/falcosidekick.yaml
+    # command: "-c /etc/falco/falcosidekick.yaml"
+  
+  redis:
+    image: redislabs/redisearch:2.2.4
+    container_name: redis
+  
+  falcosidekick-ui:
+    depends_on: [falcosidekick, redis]
+    container_name: falcosidekick-ui
+    image: falcosecurity/falcosidekick-ui:2.2.0
+    environment:
+      - FALCOSIDEKICK_UI_REDIS_URL=redis:6379
+    ports:
+      - 2802:2802
