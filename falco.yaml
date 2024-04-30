@@ -143,7 +143,7 @@
 # "first match wins" principle. However, enabling the `all` matching option may result
 # in a performance penalty. We recommend carefully testing this alternative setting  
 # before deploying it in production. Read more under the `rule_matching` configuration.
-rules_file:
+rules_file:  
   - /etc/falco/falco_rules.yaml
   - /etc/falco/falco_rules.local.yaml
   - /etc/falco/rules.d
@@ -187,7 +187,7 @@ rules_file:
 # load_plugins: [k8saudit, json]
 # for okta, you will:
 # load_plugins: [okta, json]
-load_plugins: [json, gcpaudit]
+load_plugins: [json]
 
 # Customize subsettings for each enabled plugin. These settings will only be
 # applied when the corresponding plugin is enabled using the `load_plugins`
